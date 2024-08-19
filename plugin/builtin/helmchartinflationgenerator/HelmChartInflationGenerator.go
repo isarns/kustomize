@@ -68,6 +68,9 @@ func (p *plugin) Config(
 	if len(h.GeneralConfig().HelmConfig.ApiVersions) != 0 {
 		p.HelmChart.ApiVersions = h.GeneralConfig().HelmConfig.ApiVersions
 	}
+	if h.GeneralConfig().HelmConfig.Debug {
+		p.HelmChart.Debug = h.GeneralConfig().HelmConfig.Debug
+	}
 
 	p.h = h
 	if err = yaml.Unmarshal(config, p); err != nil {
@@ -180,9 +183,10 @@ func (p *plugin) runHelmCommand(
 			fmt.Errorf(
 				"unable to run: '%s %s' with env=%s (is '%s' installed?): %w",
 				helm, strings.Join(args, " "), env, helm, err),
-			stderr.String(),
+				stderr.String()+stdout.String(),
 		)
 	}
+	fmt.Println("Running THAT")
 	return stdout.Bytes(), err
 }
 
